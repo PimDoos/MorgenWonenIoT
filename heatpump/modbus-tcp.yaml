@@ -1,0 +1,8 @@
+name: pi01
+type: rtuovertcp
+host: ip_of_pi
+port: 501
+climates: !include modbus_climate.yaml
+sensors: !include modbus_sensor.yaml
+switches: !include modbus_switch.yaml
+binary_sensors: !include modbus_binarysensor.yaml
