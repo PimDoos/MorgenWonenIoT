@@ -1,0 +1,13 @@
+[Unit]
+Description=Modbus RTU over TCP host
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/modbusrtu
+ExecStart=/opt/modbusrtu/modbusrtu.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
