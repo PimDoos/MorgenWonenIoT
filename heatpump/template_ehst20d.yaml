@@ -1,0 +1,117 @@
+# Supporting templates to interpret ModBus data
+ehst20d_operational_mode:
+    friendly_name: "EHST20D Operational mode"
+    icon_template: mdi:pump
+    value_template: "{% if is_state('sensor.ehst20d_operational_mode_id','0') %}Stop
+    {% elif is_state('sensor.ehst20d_operational_mode_id','1') %}Hot Water
+    {% elif is_state('sensor.ehst20d_operational_mode_id','2') %}Heating
+    {% elif is_state('sensor.ehst20d_operational_mode_id','3') %}Cooling
+    {% elif is_state('sensor.ehst20d_operational_mode_id','4') %}No voltage contact input (hot water storage)
+    {% elif is_state('sensor.ehst20d_operational_mode_id','5') %}Freeze stat
+    {% elif is_state('sensor.ehst20d_operational_mode_id','6') %}Legionella
+    {% elif is_state('sensor.ehst20d_operational_mode_id','7') %}Heating-Eco
+    {% elif is_state('sensor.ehst20d_operational_mode_id','8') %}Mode 1
+    {% elif is_state('sensor.ehst20d_operational_mode_id','9') %}Mode 2
+    {% elif is_state('sensor.ehst20d_operational_mode_id','10') %}Mode 3
+    {% elif is_state('sensor.ehst20d_operational_mode_id','11') %}No voltage contact input (heating up)
+    {% else %}unknown
+    {% endif %}"
+ehst20d_defrost:
+    friendly_name: "EHST20D Defrost"
+    icon_template: mdi:snowflake
+    value_template: "{% if is_state('sensor.ehst20d_defrost_operation_id','0') %}Normal
+    {% elif is_state('sensor.ehst20d_defrost_operation_id','1') %}Standby
+    {% elif is_state('sensor.ehst20d_defrost_operation_id','2') %}Defrost
+    {% elif is_state('sensor.ehst20d_defrost_operation_id','3') %}Waiting Restart
+    {% else %}unknown
+    {% endif %}"
+ehst20d_heating_energy_consumption:
+    friendly_name: "EHST20D Heating energy consumption"
+    device_class: energy
+    unit_of_measurement: kWh
+    value_template: '{{ (states("sensor.ehst20d_heating_energy_consumption_significant") + "." + states("sensor.ehst20d_heating_energy_consumption_decimal")) | float }}'
+ehst20d_heating_energy_production:
+    friendly_name: "EHST20D Heating energy production"
+    device_class: energy
+    unit_of_measurement: kWh
+    value_template: '{{ (states("sensor.ehst20d_heating_energy_production_significant") + "." + states("sensor.ehst20d_heating_energy_production_decimal")) | float }}'
+ehst20d_heating_energy_factor:
+    friendly_name: "EHST20D Heating energy factor"
+    device_class: power_factor
+    unit_of_measurement: '%'
+    value_template: '{{ (states("sensor.ehst20d_heating_energy_production") | float * 100 / (states("sensor.ehst20d_heating_energy_consumption")) | float) | round(1) + 100 | float }}'
+
+
+ehst20d_hot_water_energy_consumption:
+    friendly_name: "EHST20D Hot water energy consumption"
+    device_class: energy
+    unit_of_measurement: kWh
+    value_template: '{{ (states("sensor.ehst20d_hot_water_energy_consumption_significant") + "." + states("sensor.ehst20d_hot_water_energy_consumption_decimal")) | float }}'
+ehst20d_hot_water_energy_production:
+    friendly_name: "EHST20D Hot water energy production"
+    device_class: energy
+    unit_of_measurement: kWh
+    value_template: '{{ (states("sensor.ehst20d_hot_water_energy_production_significant") + "." + states("sensor.ehst20d_hot_water_energy_production_decimal")) | float }}'
+ehst20d_hot_water_energy_factor:
+    friendly_name: "EHST20D Hot water energy factor"
+    device_class: power_factor
+    unit_of_measurement: '%'
+    value_template: '{{ (states("sensor.ehst20d_hot_water_energy_production") | float * 100 / (states("sensor.ehst20d_hot_water_energy_consumption")) | float) | round(1) + 100 | float }}'
+ehst20d_total_energy_production:
+    friendly_name: "EHST20D total energy production"
+    device_class: energy
+    unit_of_measurement: kWh
+    value_template: '{{ (states("sensor.ehst20d_hot_water_energy_production") | float + states("sensor.ehst20d_heating_energy_production") | float) | round(2) }}'
+
+ehst20d_power:
+    friendly_name: Heatpump Power
+    value_template: > 
+        {% set pump_power = 0 %}
+        {% set booster_power = 0 %}
+        {% set standby_power = 20 %}
+        {% set heatpump_power = 0 %}
+        {% if(states("binary_sensor.ehst20d_pump_1") == "on") %}
+        {% set pump_power = pump_power + 30 %}
+        {% endif %}
+        {% if(states("binary_sensor.ehst20d_pump_2") == "on") %}
+        {% set pump_power = pump_power + 30 %}
+        {% endif %}
+        {% if(states("binary_sensor.ehst20d_booster_heater_1") == "on") %}
+        {% set booster_power = booster_power + 2200 %}
+        {% endif %}
+        {% if(states("binary_sensor.ehst20d_booster_heater_2") == "on") %}
+        {% set booster_power = booster_power + 2200 %}
+        {% endif %}
+        {% if(states("binary_sensor.ehst20d_heatpump") == "on" and states("sensor.ehst20d_operational_mode") == "Heating") %}
+        {% set heatpump_power = 1700 %}
+        {% elif(states("binary_sensor.ehst20d_heatpump") == "on" and states("sensor.ehst20d_operational_mode") == "Hot Water") %}
+        {% set heatpump_power = 2500 %}
+        {% endif %}
+        {{ standby_power | int + heatpump_power | int + pump_power | int + booster_power | int }}
+    unit_of_measurement: W
+    icon_template: mdi:gauge
+ehst20d_thermal_power:
+    friendly_name: Heatpump Heat Power
+    value_template: > 
+        {% set flow = (states("sensor.ehst20d_flow_rate") | float) * 60 %}
+        {% set temp_in = states("sensor.ehst20d_return_temperature") | float %}
+        {% set temp_out = states("sensor.ehst20d_flow_temperature") | float  %}
+        {% set power = 4.2 * flow * (temp_out - temp_in) / 3.6 %}
+        {{ power | int }}
+    unit_of_measurement: W
+    icon_template: mdi:gauge
+    availability_template: >
+        {{ states("sensor.ehst20d_flow_rate") != unavailable and states("sensor.ehst20d_return_temperature") != unavailable and states("sensor.ehst20d_flow_temperature") != unavailable}}
+
+ehst20d_efficiency:
+    friendly_name: Heatpump Efficiency
+    value_template: > 
+        {% set electric_power = states("sensor.ecodan_power") | int %}
+        {% set thermal_power = states("sensor.ehst20d_thermal_power") | int %}
+        {{ (thermal_power / electric_power) | round(2) }}
+    unit_of_measurement: COP
+    icon_template: mdi:gauge
+    availability_template: >
+        {% set electric_power = states("sensor.ecodan_power") | int %}
+        {% set thermal_power = states("sensor.ehst20d_thermal_power") | int %}
+        {{ states("sensor.ecodan_power") != unavailable and states("sensor.ehst20d_thermal_power") != unavailable and electric_power > 200 }}
