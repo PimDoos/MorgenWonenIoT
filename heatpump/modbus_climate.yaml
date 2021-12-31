@@ -1,0 +1,21 @@
+- name: EHST20D
+  slave: 4
+  address: 94
+  target_temp_register: 54
+  count: 1
+  precision: 1
+  scale: 0.01
+  max_temp: 25
+  min_temp: 10
+  temp_step: 0.5
+  
+- name: EHST20D Tank
+  slave: 4
+  address: 105
+  target_temp_register: 30
+  count: 1
+  precision: 1
+  scale: 0.01
+  max_temp: 55
+  min_temp: 40
+  temp_step: 0.5
