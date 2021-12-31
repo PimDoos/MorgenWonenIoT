@@ -1,0 +1,13 @@
+- platform: generic_thermostat
+  name: Bedroom heating
+  heater: switch.trv_zone_3
+  target_sensor: sensor.bedroom_temperature
+  unique_id: trvz3climat
+  
+- platform: generic_thermostat
+  name: Bathroom heating
+  heater: switch.trv_zone_4
+  target_sensor: sensor.bathkamer_temperature
+  unique_id: trvz4climat
+  
+  # Etcetera
