@@ -1,0 +1,44 @@
+- name: EHST20D Booster Heater 1
+  slave: 4
+  address: 17
+  input_type: discrete_input
+  
+- name: EHST20D Booster Heater 2
+  slave: 4
+  address: 18
+  input_type: discrete_input
+
+- name: EHST20D Immersion Heater
+  slave: 4
+  address: 20
+  input_type: discrete_input
+
+- name: EHST20D Pump 1
+  slave: 4
+  address: 21
+  input_type: discrete_input
+
+- name: EHST20D Pump 2
+  slave: 4
+  address: 22
+  input_type: discrete_input
+
+- name: EHST20D Pump 3
+  slave: 4
+  address: 23
+  input_type: discrete_input
+
+- name: EHST20D 3 way valve
+  slave: 4
+  address: 24
+  input_type: discrete_input
+
+- name: EHST20D 2 way valve
+  slave: 4
+  address: 25
+  input_type: discrete_input
+
+- name: EHST20D Heatpump
+  slave: 4
+  address: 7
+  input_type: discrete_input
