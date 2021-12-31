@@ -1,0 +1,26 @@
+- name: EHST20D System Power
+  slave: 4
+  address: 25
+  command_on: 1
+  command_off: 0
+  scan_interval: 30
+  verify:
+    delay: 10
+
+- name: EHST20D Hot Water Force
+  slave: 4
+  address: 37
+  command_on: 1
+  command_off: 0
+  scan_interval: 30
+  verify:
+    delay: 10
+
+- name: EHST20D Holiday Mode
+  slave: 4
+  address: 38
+  command_on: 1
+  command_off: 0
+  scan_interval: 30
+  verify:
+    delay: 10
