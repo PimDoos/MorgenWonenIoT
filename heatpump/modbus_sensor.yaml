@@ -1,0 +1,162 @@
+- name: EHST20D System power ID
+  slave: 4
+  address: 25
+
+- name: EHST20D Operational mode ID
+  slave: 4
+  address: 26
+
+- name: EHST20D Climate Mode ID
+  slave: 4
+  address: 28
+
+- name: EHST20D Defrost Operation ID
+  slave: 4
+  address: 67
+
+- name: EHST20D Residual Heat Removal ID
+  slave: 4
+  address: 68
+
+- name: EHST20D Heat Pump Frequency
+  slave: 4
+  address: 73
+  unit_of_measurement: Hz
+  scale: 1
+  precision: 0
+
+- name: EHST20D Heat Source ID
+  slave: 4
+  address: 80
+
+- name: EHST20D Tank water temperature
+  slave: 4
+  address: 106
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Flow temperature
+  slave: 4
+  address: 102
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Return temperature
+  slave: 4
+  address: 104
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Refrigerant Liquid Temperature
+  slave: 4
+  address: 97
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Outside ambient temperature
+  slave: 4
+  address: 99
+  unit_of_measurement: °C
+  scale: 0.1
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Zone 1 room temperature
+  slave: 4
+  address: 94
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Zone 1 flow temperature
+  slave: 4
+  address: 107
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Zone 1 return temperature
+  slave: 4
+  address: 109
+  unit_of_measurement: °C
+  scale: 0.01
+  precision: 1
+  device_class: temperature
+
+- name: EHST20D Flow rate
+  slave: 4
+  address: 299
+  unit_of_measurement: l/min
+  precision: 0
+
+# Energy Consumption
+- name: EHST20D Heating Energy Consumption Significant
+  slave: 4
+  address: 282
+  unit_of_measurement: kWh
+  precision: 0
+
+- name: EHST20D Heating Energy Consumption Decimal
+  slave: 4
+  address: 283
+  unit_of_measurement: Wh
+  precision: 0
+
+- name: EHST20D Hot Water Energy Consumption Significant
+  slave: 4
+  address: 286
+  unit_of_measurement: kWh
+  precision: 0
+
+- name: EHST20D Hot Water Energy Consumption Decimal
+  slave: 4
+  address: 287
+  unit_of_measurement: Wh
+  precision: 0
+
+# Energy production
+- name: EHST20D Heating Energy Production Significant
+  slave: 4
+  address: 292
+  unit_of_measurement: kWh
+  precision: 0
+
+- name: EHST20D Heating Energy Production Decimal
+  slave: 4
+  address: 293
+  unit_of_measurement: Wh
+  precision: 0
+
+- name: EHST20D Hot Water Energy Production Significant
+  slave: 4
+  address: 296
+  unit_of_measurement: kWh
+  precision: 0
+
+- name: EHST20D Hot Water Energy Production Decimal
+  slave: 4
+  address: 297
+  unit_of_measurement: Wh
+  precision: 0
+
+- name: EHST20D Electric Capactity
+  slave: 4
+  address: 150
+  unit_of_measurement: W
+  precision: 1
+  scale: 0.1
+
+- name: EHST20D Model Profile
+  slave: 4
+  address: 151
+  input_type: input
