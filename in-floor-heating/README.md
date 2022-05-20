@@ -6,3 +6,5 @@ I used 3V TRV motors harvested from Sygonix BLE thermostats, controlled by an ES
 Files
 =====
 `climate-trv.yaml` contains generic thermostat entries to control the valves for the in-floor heating.
+
+![image](https://user-images.githubusercontent.com/17709721/169540324-9dca3072-007f-44f7-a212-00b5362a8f37.png)
