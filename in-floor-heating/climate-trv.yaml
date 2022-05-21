@@ -7,7 +7,7 @@
 - platform: generic_thermostat
   name: Bathroom heating
   heater: switch.trv_zone_4
-  target_sensor: sensor.bathkamer_temperature
+  target_sensor: sensor.bathroom_temperature
   unique_id: trvz4climat
   
   # Etcetera
