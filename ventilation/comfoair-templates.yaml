@@ -1,0 +1,116 @@
+- sensor:
+    - name: ComfoAir Exhaust Flow
+      unit_of_measurement: "m³/h"
+      icon: mdi:air-filter
+      state: >
+        {{ states("sensor.comfoair_return_air_level") | int * 3.5 | int }}
+      availability: >
+        {{states("sensor.comfoair_return_air_level")  != "unavailable" }}
+
+    - name: ComfoAir Supply Flow
+      unit_of_measurement: "m³/h"
+      icon: mdi:air-filter
+      state: >
+        {{ states("sensor.comfoair_supply_air_level") | int * 3.5 | int }}
+      availability: >
+        {{states("sensor.comfoair_supply_air_level")  != "unavailable" }}
+
+    - name: ComfoAir CO2 Downstairs
+      unit_of_measurement: "ppm"
+      state: >
+        {{ ((states("sensor.comfoair_analog_sensor_1") | int - 20) * 20) + 400 | int }}
+      availability: >
+        {{states("sensor.comfoair_analog_sensor_1")  != "unavailable" }}
+      state_class: measurement
+      device_class: carbon_dioxide
+
+    - name: ComfoAir CO2 Upstairs
+      unit_of_measurement: "ppm"
+      state: >
+        {{ ((states("sensor.comfoair_analog_sensor_2") | int - 20) * 20) + 400 | int }}
+      availability: >
+        {{states("sensor.comfoair_analog_sensor_2")  != "unavailable" }}
+      state_class: measurement
+      device_class: carbon_dioxide
+
+    - name: ComfoAir Estimated Power
+      state: >
+        {% set supplyfan = states("sensor.comfoair_supply_fan_speed") | int %}
+        {% set exhaustfan = states("sensor.comfoair_exhaust_fan_speed") | int %}
+        {% set preheat_power = 0 %}
+        {% if(states("binary_sensor.comfoair_preheating_status") == "on") %}
+        {% set preheat_power = 1350 %}
+        {% endif %}
+        {% set supplyfanpower = 120 * ((supplyfan / 3150) ** 4) %}
+        {% set exhaustfanpower = 120 * ((exhaustfan / 3150) ** 4) %}
+        {% set basepower = 20 %}
+        {% set maxpower = 243 %}
+        {{ ([basepower + supplyfanpower + exhaustfanpower, maxpower] | min + preheat_power) | round(1) }}
+      availability: >
+        {{states("sensor.comfoair_supply_fan_speed")  != "unavailable" }}
+      unit_of_measurement: W
+      state_class: measurement
+      device_class: power
+
+    - name: ComfoAir Inside Temperature Delta
+      state: >
+        {{ states("sensor.comfoair_supply_temperature") | float - states("sensor.comfoair_return_temperature") | float }}
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer
+      availability: >
+        {{states("sensor.comfoair_supply_temperature")  != "unavailable" }}
+      state_class: measurement
+
+    - name: ComfoAir Outside Temperature Delta
+      state: >
+        {{ states("sensor.comfoair_exhaust_temperature") | float - states("sensor.comfoair_outside_temperature") | float }}
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer
+      availability: >
+        {{states("sensor.comfoair_exhaust_temperature")  != "unavailable" }}
+      state_class: measurement
+
+    - name: ComfoAir Ventilation Temperature Delta
+      state: >
+        {{ states("sensor.comfoair_outside_temperature") | float - states("sensor.comfoair_return_temperature") | float }}
+      unit_of_measurement: "°C"
+      icon: mdi:thermometer
+      availability: >
+        {{states("sensor.comfoair_outside_temperature")  != "unavailable" }}
+      state_class: measurement
+
+    - name: ComfoAir Inside air density
+      state: >
+        {% set pressure = states("sensor.openweathermap_pressure") | float * 100 %}
+        {% set temp_return = states("sensor.comfoair_return_temperature") | float + 273 %}
+        {% set gas_constant = 287.058 %}
+        {% set density = pressure / (gas_constant * temp_return) %}
+        {{density}}
+      unit_of_measurement: "kg/m³"
+      icon: mdi:scale
+      availability: '{{ states("sensor.openweathermap_pressure")  != "unavailable" and states("sensor.comfoair_return_temperature")  != "unavailable" }}'
+
+    - name: Comfoair Outside air density
+      state: >
+        {% set pressure = states("sensor.openweathermap_pressure") | float * 100 %}
+        {% set temp_return = states("sensor.comfoair_outside_temperature") | float + 273 %}
+        {% set gas_constant = 287.058 %}
+        {% set density = pressure / (gas_constant * temp_return) %}
+        {{ density }}
+      unit_of_measurement: "kg/m³"
+      icon: mdi:scale
+      availability: '{{ states("sensor.openweathermap_pressure")  != "unavailable" and states("sensor.comfoair_outside_temperature")  != "unavailable" }}'
+
+    - name: ComfoAir Inside Thermal Power
+      state: >
+        {% set density = states("sensor.comfoair_inside_air_density") | float %}
+        {% set heat_capacity = 1005 %}
+        {% set air_flow = states("sensor.comfoair_supply_flow") | float %}
+        {% set air_mass_flow = air_flow * density %}
+        {% set temp_delta = states("sensor.comfoair_inside_temperature_delta") | float %}
+        {% set energy_flow_joules = air_mass_flow * heat_capacity * density * temp_delta %}
+        {{ (energy_flow_joules / 3600) | round(0) }}
+      unit_of_measurement: "W"
+      availability: '{{ states("sensor.comfoair_supply_flow")  != "unavailable" and states("sensor.comfoair_inside_air_density")  != "unavailable" and states("sensor.comfoair_inside_temperature_delta")  != "unavailable"}}'
+      state_class: measurement
+      device_class: power
