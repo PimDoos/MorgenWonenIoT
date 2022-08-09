@@ -1,49 +1,42 @@
-import json
-import socket
-import ssl
-from hashlib import sha1
-from time import sleep
-from token import NEWLINE
+from time import time
+from const import *
+from onesocket import OneSocket
 
-# Configuration
-one_host = "127.0.0.1" # IP of One Smart Control 'Connect' box
-one_port = 9010 # TCP Port running the TLS socket
-one_user = "something" # App Username
-one_password = "somethingsecret" # App Password
+gateway = OneSocket()
+gateway.connect("127.0.0.1", 9010, "appusername", "apppassword")
+transaction_events = gateway.send_cmd(command=COMMAND_EVENTS, action=ACTION_SUBSCRIBE, topics=["SITE","AUTHENTICATION","DEVICE","ROOM","METER","PRESET","PRESETGROUP","TRIGGER","ROLE","USER","SITEPRESET","UPGRADE","MESSAGE","ENERGY"])
+transaction_meters = gateway.send_cmd(command=COMMAND_METER, action=ACTION_LIST)
 
-password_hash = sha1(one_password.encode()).hexdigest()
+last_ping = time()
+meters = None
+while gateway.is_connected():
+	# Read outstanding responses
+	gateway.get_responses()
 
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
-ssl_context.set_ciphers('DEFAULT')
-
-
-raw_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-transaction_id = 10
-with ssl_context.wrap_socket(raw_socket) as ssl_socket:
-	ssl_socket.connect((one_host, one_port))
+	# Keep the connection alive
+	if time() - last_ping > PING_INTERVAL:
+		gateway.ping()
+		last_ping = time()
 	
-	command = {"cmd":"authenticate","username":one_user, "password": password_hash, "transaction": 10}
-	rpc_data = json.dumps(command) + "\r\n"
-	print(command)
-	ssl_socket.sendall(rpc_data.encode())
-
-	transaction_id += 1
-  
-  # Subscribe to all events
-	command = {"cmd":"events","action":"subscribe","topics":["SITE","AUTHENTICATION","DEVICE","ROOM","METER","PRESET","PRESETGROUP","TRIGGER","ROLE","USER","SITEPRESET","UPGRADE","MESSAGE","ENERGY"], "transaction": transaction_id}
-	rpc_data = json.dumps(command) + "\r\n"
-	print(command)
-	ssl_socket.send(rpc_data.encode())
-
-  # Listen and wait
-	while True:
-		rpc_reply = ssl_socket.recv(1024)
-		reply = rpc_reply.decode()
-		if(len(reply) > 16):
-			reply_data = json.loads(reply)
-			print(reply)
-
-		
+	if not meters:
+		transaction = gateway.get_transaction(transaction_meters)
+		print(transaction)
+		if transaction != None:
+			result_meters = transaction[RPC_RESULT]["meters"]
+			meters = dict()
+			for meter in result_meters:
+				meters[meter["id"]] = meter
+			print(meters)
+	
+	events = gateway.get_events()
+	if len(events) > 0:
+		for event in events:
+			if event[RPC_EVENT] == EVENT_ENERGY_CONSUMPTION and meters != None:
+				print()
+				print("=== ENERGY READING ===")
+				for reading in event[RPC_DATA][RPC_VALUES]:
+					meter_name = meters[reading["id"]]["name"]
+					meter_value = reading["value"]
+					print("{name}: {value} W".format(name=meter_name,value=meter_value))
+				
+				print("======================")
