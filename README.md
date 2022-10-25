@@ -9,3 +9,4 @@ Collection of configuration files to hook up MorgenWonen installations to Home A
 ### Other useful repositories
 - [adorobis/hacomfoairmqtt](https://github.com/adorobis/hacomfoairmqtt): Control a Zehnder WTW unit via Home Assistant over MQTT
 - [Emilv2/huawei_solar](https://github.com/Emilv2/huawei_solar): Read data from a Huawei Sun2000 Solar Inverter
+- [PimDoos/onesmartcontrolha](https://github.com/PimDoos/onesmartcontrolha): My custom integration for reading and controlling One Smart Control systems
