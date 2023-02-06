@@ -1,0 +1,12 @@
+name: pi01
+type: serial
+baudrate: 9600
+bytesize: 8
+method: rtu
+parity: E
+port: /dev/ttyUSB0 # Change this to your RS485 adapters address
+stopbits: 1
+climates: !include modbus_climate.yaml
+sensors: !include modbus_sensor.yaml
+switches: !include modbus_switch.yaml
+binary_sensors: !include modbus_binarysensor.yaml
