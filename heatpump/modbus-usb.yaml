@@ -3,7 +3,7 @@ type: serial
 baudrate: 9600
 bytesize: 8
 method: rtu
-parity: E
+parity: N
 port: /dev/ttyUSB0 # Change this to your RS485 adapters address
 stopbits: 1
 climates: !include modbus_climate.yaml
